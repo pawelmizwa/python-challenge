@@ -26,14 +26,14 @@ class Data(Resource):
             output_path=prod.output_path,
             nesting_keys=prod.nesting_keys,
         )
-        self.raw_data = self.fh.get_data_from_file()
 
     def post(self):
         try:
+            raw_data = self.fh.get_data_from_file()
             nesting_level = request.args["nesting_level"]
             level = self.get_nesting_level(nesting_level)
             nested_result = self.fh.convert_list_of_dicts_to_nested_dict(
-                nesting_level=level, raw_data=self.raw_data
+                nesting_level=level, raw_data=raw_data
             )
             # self.fh.write_data_to_file() ### not needed
             response = make_response(jsonify(nested_result), 200)

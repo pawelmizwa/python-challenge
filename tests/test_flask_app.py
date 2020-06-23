@@ -66,7 +66,7 @@ class BasicTests(unittest.TestCase):
         return self.app.post(f"/data", headers=self.get_correct_auth_header())
 
     def get_data(self):
-        return self.app.post(f"/data", headers=self.get_correct_auth_header())
+        return self.app.get(f"/data", headers=self.get_correct_auth_header())
 
     def test_incorrect_auth(self):
         response = self.post_data_incorrect_auth_header()
@@ -91,6 +91,6 @@ class BasicTests(unittest.TestCase):
         response = self.get_data()
         self.assertEqual(response.status_code, 405)
         self.assertIn(
-            b'{"message":"The method is not allowed for the requested URL."}',
+            b'{"message": "The method is not allowed for the requested URL."}',
             response.data,
         )
