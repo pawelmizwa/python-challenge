@@ -22,15 +22,15 @@ def key_func(k):
     return _KEY_ORDER.get(k, 10)
 
 
-class CustomLogger(logging.Formatter):
+class StenoFormatter(logging.Formatter):
     def __init__(
-        self,
-        fmt=None,
-        datefmt=None,
-        pprint=False,
-        user="candidate",
-        run_id=None,
-        csv=False,
+            self,
+            fmt=None,
+            datefmt=None,
+            pprint=False,
+            user="candidate",
+            run_id=None,
+            csv=False,
     ):
         super().__init__(fmt, datefmt)
         self._pprint = pprint
@@ -94,7 +94,7 @@ class CustomLogger(logging.Formatter):
             return jsons_log
 
 
-class CustomLogger(logging.Logger):
+class StenoLogger(logging.Logger):
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
 
@@ -135,25 +135,23 @@ class CustomLogger(logging.Logger):
 
 
 def configure_logging(
-    name,
-    loggers_to_enable=None,
-    shdlr_out=sys.stderr,
-    pretty_print=True,
-    user="candidate",
-    run_id=None,
+        name,
+        loggers_to_enable=None,
+        shdlr_out=sys.stderr,
+        pretty_print=True,
+        user="candidate",
+        run_id=None,
 ):
     if loggers_to_enable is None:
         loggers_to_enable = [name]
     else:
         loggers_to_enable.append(name)
-    logging.setLoggerClass(CustomLogger)
+    logging.setLoggerClass(StenoLogger)
     for logger_name in set(loggers_to_enable):
         logger = logging.getLogger(logger_name)
         logger.setLevel(10)
         stream_handler = logging.StreamHandler(shdlr_out)
-        stream_handler.setFormatter(
-            CustomLogger(pprint=pretty_print, run_id=run_id, user=user)
-        )
+        stream_handler.setFormatter(StenoFormatter(pprint=pretty_print, run_id=run_id, user=user))
         logger.addHandler(stream_handler)
 
     logger = logging.getLogger(name)
@@ -161,7 +159,10 @@ def configure_logging(
     return logger
 
 
-logger = configure_logging(name="example", run_id=time.time(),)
+logger = configure_logging(
+    name="example",
+    run_id=time.time(),
+)
 
 
 def log(**outer_kwargs):
