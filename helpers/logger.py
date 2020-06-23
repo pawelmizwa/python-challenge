@@ -24,13 +24,13 @@ def key_func(k):
 
 class CustomLogger(logging.Formatter):
     def __init__(
-            self,
-            fmt=None,
-            datefmt=None,
-            pprint=False,
-            user="candidate",
-            run_id=None,
-            csv=False,
+        self,
+        fmt=None,
+        datefmt=None,
+        pprint=False,
+        user="candidate",
+        run_id=None,
+        csv=False,
     ):
         super().__init__(fmt, datefmt)
         self._pprint = pprint
@@ -135,12 +135,12 @@ class CustomLogger(logging.Logger):
 
 
 def configure_logging(
-        name,
-        loggers_to_enable=None,
-        shdlr_out=sys.stderr,
-        pretty_print=True,
-        user="candidate",
-        run_id=None,
+    name,
+    loggers_to_enable=None,
+    shdlr_out=sys.stderr,
+    pretty_print=True,
+    user="candidate",
+    run_id=None,
 ):
     if loggers_to_enable is None:
         loggers_to_enable = [name]
@@ -151,7 +151,9 @@ def configure_logging(
         logger = logging.getLogger(logger_name)
         logger.setLevel(10)
         stream_handler = logging.StreamHandler(shdlr_out)
-        stream_handler.setFormatter(CustomLogger(pprint=pretty_print, run_id=run_id, user=user))
+        stream_handler.setFormatter(
+            CustomLogger(pprint=pretty_print, run_id=run_id, user=user)
+        )
         logger.addHandler(stream_handler)
 
     logger = logging.getLogger(name)
@@ -159,10 +161,7 @@ def configure_logging(
     return logger
 
 
-logger = configure_logging(
-    name="example",
-    run_id=time.time(),
-)
+logger = configure_logging(name="example", run_id=time.time(),)
 
 
 def log(**outer_kwargs):

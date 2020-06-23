@@ -21,7 +21,7 @@ class FileHandler:
         reraise=True,
     )
     def get_data_from_file(self) -> List[dict]:
-        with open(self.input_path, 'r') as f:
+        with open(self.input_path, "r") as f:
             data = ast.literal_eval(f.read())
         return data
 
@@ -32,11 +32,13 @@ class FileHandler:
         reraise=True,
     )
     def write_data_to_file(self, nested: dict):
-        with open(self.output_path, 'w') as file:
+        with open(self.output_path, "w") as file:
             file.write(json.dumps(nested))
 
     @log()
-    def convert_list_of_dicts_to_nested_dict(self, raw_data: List[dict], nesting_level: int) -> dict:
+    def convert_list_of_dicts_to_nested_dict(
+        self, raw_data: List[dict], nesting_level: int
+    ) -> dict:
         if nesting_level >= len(self.nesting_keys):
             nesting_level = len(self.nesting_keys)
 
@@ -56,12 +58,18 @@ class FileHandler:
             if level == 1:
                 for item in raw_data:
                     if nesting_level > 2:
-                        result[item[self.nesting_keys[0]]][item[self.nesting_keys[1]]] = dict()
+                        result[item[self.nesting_keys[0]]][
+                            item[self.nesting_keys[1]]
+                        ] = dict()
                     else:
                         try:
-                            result[item[self.nesting_keys[0]]][item[self.nesting_keys[1]]].append(item)
+                            result[item[self.nesting_keys[0]]][
+                                item[self.nesting_keys[1]]
+                            ].append(item)
                         except KeyError:
-                            result[item[self.nesting_keys[0]]][item[self.nesting_keys[1]]] = [item]
+                            result[item[self.nesting_keys[0]]][
+                                item[self.nesting_keys[1]]
+                            ] = [item]
                         item.pop(self.nesting_keys[0])
                         item.pop(self.nesting_keys[1])
 
@@ -69,10 +77,12 @@ class FileHandler:
                 for item in raw_data:
                     try:
                         result[item[self.nesting_keys[0]]][item[self.nesting_keys[1]]][
-                            item[self.nesting_keys[2]]].append(item)
+                            item[self.nesting_keys[2]]
+                        ].append(item)
                     except KeyError:
                         result[item[self.nesting_keys[0]]][item[self.nesting_keys[1]]][
-                            item[self.nesting_keys[2]]] = [item]
+                            item[self.nesting_keys[2]]
+                        ] = [item]
                     item.pop(self.nesting_keys[0])
                     item.pop(self.nesting_keys[1])
                     item.pop(self.nesting_keys[2])

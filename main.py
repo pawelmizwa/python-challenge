@@ -9,10 +9,10 @@ import logging
 logger = logging.getLogger("example")
 app = Flask(__name__)
 api = Api(app)
-app.config['BASIC_AUTH_USERNAME'] = prod.local_user
-app.config['BASIC_AUTH_PASSWORD'] = prod.local_password
+app.config["BASIC_AUTH_USERNAME"] = prod.local_user
+app.config["BASIC_AUTH_PASSWORD"] = prod.local_password
 basic_auth = BasicAuth(app)
-app.config['BASIC_AUTH_FORCE'] = True
+app.config["BASIC_AUTH_FORCE"] = True
 
 
 class Nesting_level_error(Exception):
@@ -21,23 +21,31 @@ class Nesting_level_error(Exception):
 
 class Data(Resource):
     def __init__(self):
-        self.fh = FileHandler(input_path=prod.input_path,
-                              output_path=prod.output_path,
-                              nesting_keys=prod.nesting_keys)
+        self.fh = FileHandler(
+            input_path=prod.input_path,
+            output_path=prod.output_path,
+            nesting_keys=prod.nesting_keys,
+        )
         self.raw_data = self.fh.get_data_from_file()
 
     def post(self):
         try:
             nesting_level = request.args["nesting_level"]
             level = self.get_nesting_level(nesting_level)
-            nested_result = self.fh.convert_list_of_dicts_to_nested_dict(nesting_level=level, raw_data=self.raw_data)
+            nested_result = self.fh.convert_list_of_dicts_to_nested_dict(
+                nesting_level=level, raw_data=self.raw_data
+            )
             # self.fh.write_data_to_file() ### not needed
             response = make_response(jsonify(nested_result), 200)
         except BadRequestKeyError as e:
-            response = make_response({"message": "Please specify nesting_level in params"}, 400)
+            response = make_response(
+                {"message": "Please specify nesting_level in params"}, 400
+            )
             logger.warning(msg=e)
         except ValueError as e:
-            response = make_response({"message": "Please provide nesting level in correct format"}, 400)
+            response = make_response(
+                {"message": "Please provide nesting level in correct format"}, 400
+            )
             logger.warning(msg=e)
         except FileNotFoundError as e:
             logger.error(msg=e)
@@ -48,11 +56,11 @@ class Data(Resource):
         return response
 
     def get_nesting_level(self, nesting_level):
-        level = int(nesting_level.split('_')[-1])
+        level = int(nesting_level.split("_")[-1])
         return level
 
 
-api.add_resource(Data, '/data')
+api.add_resource(Data, "/data")
 
 if __name__ == "__main__":
-    app.run(debug=True, host='127.0.0.1', port=4002)
+    app.run(debug=True, host="127.0.0.1", port=4002)

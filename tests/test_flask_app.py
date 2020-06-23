@@ -17,8 +17,7 @@ level_result = 0
 
 
 @pytest.mark.parametrize(
-    "nesting_level, result",
-    [(nesting_level_i, level_result)],
+    "nesting_level, result", [(nesting_level_i, level_result)],
 )
 def test_get_nesting_level_example_level(data_handler, nesting_level, result):
     assert data_handler.get_nesting_level(nesting_level) == result
@@ -30,11 +29,10 @@ def test_get_data_from_file_wrong_input(file_handler_wrong_input):
 
 
 class BasicTests(unittest.TestCase):
-
     def setUp(self):
-        app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False
-        app.config['DEBUG'] = False
+        app.config["TESTING"] = True
+        app.config["WTF_CSRF_ENABLED"] = False
+        app.config["DEBUG"] = False
         self.app = app.test_client()
         self.assertEqual(app.debug, False)
 
@@ -43,27 +41,32 @@ class BasicTests(unittest.TestCase):
 
     @staticmethod
     def get_correct_auth_header():
-        message_bytes = (prod.local_user + ':' + prod.local_password).encode('ascii')
+        message_bytes = (prod.local_user + ":" + prod.local_password).encode("ascii")
         base64_bytes = base64.b64encode(message_bytes)
-        base64_message = base64_bytes.decode('ascii')
-        headers = {'Authorization': f'Basic {base64_message}'}
+        base64_message = base64_bytes.decode("ascii")
+        headers = {"Authorization": f"Basic {base64_message}"}
         return headers
 
     def post_data_specified_level(self, level):
-        return self.app.post(f'/data?nesting_level=nesting_level_{level}', headers=self.get_correct_auth_header())
+        return self.app.post(
+            f"/data?nesting_level=nesting_level_{level}",
+            headers=self.get_correct_auth_header(),
+        )
 
     def post_data_incorrect_auth_header(self):
-        message_bytes = (prod.local_user + ':' + prod.local_password + "wrong").encode('ascii')
+        message_bytes = (prod.local_user + ":" + prod.local_password + "wrong").encode(
+            "ascii"
+        )
         base64_bytes = base64.b64encode(message_bytes)
-        base64_message = base64_bytes.decode('ascii')
-        headers = {'Authorization': f'Basic {base64_message}'}
-        return self.app.post(f'/data?nesting_level=test', headers=headers)
+        base64_message = base64_bytes.decode("ascii")
+        headers = {"Authorization": f"Basic {base64_message}"}
+        return self.app.post(f"/data?nesting_level=test", headers=headers)
 
     def post_data(self):
-        return self.app.post(f'/data', headers=self.get_correct_auth_header())
+        return self.app.post(f"/data", headers=self.get_correct_auth_header())
 
     def get_data(self):
-        return self.app.post(f'/data', headers=self.get_correct_auth_header())
+        return self.app.post(f"/data", headers=self.get_correct_auth_header())
 
     def test_incorrect_auth(self):
         response = self.post_data_incorrect_auth_header()
@@ -72,14 +75,22 @@ class BasicTests(unittest.TestCase):
     def test_no_query_params_post(self):
         response = self.post_data()
         self.assertEqual(response.status_code, 400)
-        self.assertIn(b'{"message":"Please specify nesting_level in params"}', response.data)
+        self.assertIn(
+            b'{"message":"Please specify nesting_level in params"}', response.data
+        )
 
     def test_post_data_with_wrong_level(self):
         response = self.post_data_specified_level("wrong_level")
         self.assertEqual(response.status_code, 400)
-        self.assertIn(b'{"message":"Please provide nesting level in correct format"}', response.data)
+        self.assertIn(
+            b'{"message":"Please provide nesting level in correct format"}',
+            response.data,
+        )
 
     def test_get_data_not_handled_method(self):
         response = self.get_data()
         self.assertEqual(response.status_code, 405)
-        self.assertIn(b'{"message":"The method is not allowed for the requested URL."}', response.data)
+        self.assertIn(
+            b'{"message":"The method is not allowed for the requested URL."}',
+            response.data,
+        )
